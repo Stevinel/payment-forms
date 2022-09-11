@@ -1,7 +1,8 @@
 # Payment forms
 
 **Payment forms** is a little application that can generate a page for paying for goods.
-You can create a product or a set of products and generate a page to pay for them.
+You can create a product or a set of products and generate a page to pay for them.\
+*Made for familiarization with the library service Stripe.com
 
 
 ## 0. Set environment variables
