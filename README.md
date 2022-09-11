@@ -43,7 +43,7 @@ In order to access admin settings, follow the `<your-domain>/admin` URL and sign
 using the superuser credentials.
 Create a product or set of products for testing endpoints.
 
-## 4. Available endpoints
+## 3. Available endpoints
 
 ```
 api/v1/item/{id}
