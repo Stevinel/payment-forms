@@ -1,44 +1,43 @@
-import os
 import logging
-import stripe
-from django.shortcuts import get_object_or_404, render
+import os
+from urllib import request
+
+from django.shortcuts import render
 from dotenv import load_dotenv
 from rest_framework import status
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from .models import Item
-from .utils import get_line_items_data
+from .services import create_session, get_item_by_id, get_order_by_id
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 load_dotenv()
 
-
-stripe.api_key = os.environ.get("STRIPE_API_KEY")
 STRIPE_PUBLIC_API_KEY = os.environ.get("STRIPE_PUBLIC_API_KEY")
 DOMAIN = os.environ.get("DOMAIN")
 
 
 class StripeSessionIdView(APIView):
-    """
-    Getting session ID for products ADDED to stripe.
-    See detailed documentation about products and prices:
-    https://stripe.com/docs/products-prices/how-products-and-prices-work
-    """
+    def get(self, request, id) -> int:
+        """
+        Getting session ID for items/orders in your company.
+        See detailed documentation about products and prices:
+        https://stripe.com/docs/products-prices/how-products-and-prices-work
+        """
 
-    http_method_names = ["get"]
-
-    def get(self, request, item_id):
         try:
-            item = Item.objects.get(id=item_id)
-            session = stripe.checkout.Session.create(
-                success_url=f"{DOMAIN}/success",
-                cancel_url=f"{DOMAIN}/cancel",
-                line_items=[get_line_items_data(item)],
-                mode="payment",
-            )
+            order = None
+            item = None
+            url_request_from = request.META["HTTP_REFERER"]
+
+            if "item" in url_request_from:
+                item = get_item_by_id(id)
+            elif "order" in url_request_from:
+                order = get_order_by_id(id)
+            kwargs = {"item": item, "order": order}
+            session = create_session(DOMAIN, **kwargs)
         except Exception as e:
             logger.error(e)
             raise APIException(e)
@@ -46,16 +45,36 @@ class StripeSessionIdView(APIView):
 
 
 class BuyItemView(APIView):
-    """
-    """
-    http_method_names = ["get"]
+    def get(self, request, item_id) -> request:
+        """
+        Renders the item purchase page
+        """
 
-    def get(self, request, item_id):
-        logger.error('debug info')
-        item = get_object_or_404(Item, id=item_id)
+        item = get_item_by_id(item_id)
         context = {
-            'item': item,
-            'DOMAIN': DOMAIN,
-            'STRIPE_PUBLIC_API_KEY': STRIPE_PUBLIC_API_KEY,
+            "item": item,
+            "DOMAIN": DOMAIN,
+            "STRIPE_PUBLIC_API_KEY": STRIPE_PUBLIC_API_KEY,
         }
-        return render(request, 'buy_item.html', context)
+        return render(request, "buy_item.html", context)
+
+
+class BuyOrderItemsView(APIView):
+    def get(self, request, order_id) -> request:
+        """
+        Renders the order page
+        """
+
+        order = get_order_by_id(order_id)
+        try:
+            total_amount = sum([item.price for item in order.items.all()])
+            context = {
+                "order": order,
+                "total_amount": total_amount,
+                "DOMAIN": DOMAIN,
+                "STRIPE_PUBLIC_API_KEY": STRIPE_PUBLIC_API_KEY,
+            }
+            return render(request, "make_an_order.html", context)
+        except Exception as e:
+            logger.error(e)
+            raise APIException(e)

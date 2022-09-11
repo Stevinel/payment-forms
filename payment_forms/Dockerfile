@@ -1,4 +1,5 @@
 FROM python:3.8.3-alpine
+
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
 ENV USER stan
@@ -23,5 +24,7 @@ RUN pip install -r requirements.txt
 RUN chmod +x /usr/src/app/entrypoint.sh
 
 ADD . ${WORK_DIR}
+
+RUN chmod -R og+w ${WORK_DIR}/static/
 
 ENTRYPOINT ["sh", "/usr/src/app/entrypoint.sh"]

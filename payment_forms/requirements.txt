@@ -6,3 +6,4 @@ python-dotenv==0.21.0
 gunicorn==20.1.0
 psycopg2-binary==2.9.2
 tzdata==2022.2
+django-cors-headers==3.13.0

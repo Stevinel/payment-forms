@@ -13,3 +13,14 @@ class Item(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Order(models.Model):
+    items = models.ManyToManyField(Item, related_name="order_items")
+
+    class Meta:
+        verbose_name = 'Order'
+        verbose_name_plural = 'Orders'
+
+    def __str__(self):
+        return f'Order number: {self.id}'
