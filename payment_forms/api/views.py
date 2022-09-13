@@ -21,7 +21,7 @@ DOMAIN = os.environ.get("DOMAIN")
 
 
 class StripeSessionIdView(APIView):
-    def get(self, request, id):
+    def get(self, request, obj_id):
         """
         Getting session ID for items/orders in your company.
         See detailed documentation about products and prices:
@@ -34,9 +34,9 @@ class StripeSessionIdView(APIView):
             url_request_from = request.META["HTTP_REFERER"]
 
             if "item" in url_request_from:
-                item = get_item_by_id(id)
+                item = get_item_by_id(obj_id)
             elif "order" in url_request_from:
-                order = get_order_by_id(id)
+                order = get_order_by_id(obj_id)
             kwargs = {"item": item, "order": order}
             session = create_session(DOMAIN, **kwargs)
         except Exception as e:
