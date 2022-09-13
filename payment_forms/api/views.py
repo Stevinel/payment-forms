@@ -20,7 +20,7 @@ DOMAIN = os.environ.get("DOMAIN")
 
 
 class StripeSessionIdView(APIView):
-    def get(self, request, id) -> int:
+    def get(self, request, id):
         """
         Getting session ID for items/orders in your company.
         See detailed documentation about products and prices:
@@ -45,7 +45,7 @@ class StripeSessionIdView(APIView):
 
 
 class BuyItemView(APIView):
-    def get(self, request, item_id) -> request:
+    def get(self, request, item_id):
         """
         Renders the item purchase page
         """
@@ -60,7 +60,7 @@ class BuyItemView(APIView):
 
 
 class BuyOrderItemsView(APIView):
-    def get(self, request, order_id) -> request:
+    def get(self, request, order_id):
         """
         Renders the order page
         """
