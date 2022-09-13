@@ -10,7 +10,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 SECRET_KEY = os.environ.get('SECRET_KEY')
 
-DEBUG = os.environ.get('DEBUG')
+DEBUG = os.environ.get('DEBUG', False) == 'True'
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', os.environ.get('HOST')]
 
 CSRF_TRUSTED_ORIGINS = [os.environ.get('DOMAIN')]
@@ -107,3 +107,9 @@ MEDIA_ROOT = BASE_DIR / 'media'
 
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
+}

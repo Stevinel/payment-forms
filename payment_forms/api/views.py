@@ -5,6 +5,7 @@ from urllib import request
 from django.shortcuts import render
 from dotenv import load_dotenv
 from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.exceptions import APIException
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -78,3 +79,21 @@ class BuyOrderItemsView(APIView):
         except Exception as e:
             logger.error(e)
             raise APIException(e)
+
+
+@api_view(['GET'])
+def success(request):
+    """
+    Page about successful purchase
+    """
+
+    return render(request, "buy_success.html")
+
+
+@api_view(['GET'])
+def cancel(request):
+    """
+    Page about canceling a purchase
+    """
+
+    return render(request, "buy_cancel.html")
